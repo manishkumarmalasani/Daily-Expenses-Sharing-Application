@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: expenses
+  name: expenses
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expenses
+  template:
+    metadata:
+      labels:
+        app: expenses
+    spec:
+      containers:
+      - image: oxisto/expenses
+        imagePullPolicy: Always
+        name: expenses
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /usr/share/expenses/private.pem
+          name: expenses-private-key
+      - image: mongo
+        name: mongo
+        volumeMounts:
+        - mountPath: /data/db
+          name: mongo-data
+      volumes:
+      - name: mongo-data
+        hostPath:
+          path: /srv/k8s/expenses-mongo
+          type: Directory
+      - name: expenses-private-key
+        hostPath:
+          path: /srv/k8s/expenses-private.pem
+          type: File
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expenses
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: expenses
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: expenses
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    certmanager.k8s.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  rules:
+  - host: expenses.aybaze.com
+    http:
+      paths:
+      - backend:
+          serviceName: expenses
+          servicePort: 8080
+        path: /
+  tls:
+  - hosts:
+    - expenses.aybaze.com
+    secretName: expenses-tls

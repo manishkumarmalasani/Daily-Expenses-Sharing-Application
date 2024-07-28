@@ -1,0 +1,66 @@
+<!--
+Copyright 2018 Christian Banse
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<p>
+  New Expense, soon to be also edit and get details
+</p>
+
+<div class="card" *ngIf="expense">
+  <div class="card-header">Expense</div>
+  <div class="card-body">
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="form-group">
+        <div class="form-row">
+          <div class="col-9">
+            <input type="number" placeholder="Amount" class="form-control" #amount="ngModel" [(ngModel)]="expense.amount" name="amount"
+              required>
+          </div>
+          <div class="col-3">
+            <select class="form-control" #currency="ngModel" [(ngModel)]="expense.currency" name="currency">
+              <option selected>EUR</option>
+              <option>USD</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <input type="text" placeholder="Enter a comment" class="form-control" #amount="ngModel" [(ngModel)]="expense.comment" name="comment">
+      </div>
+
+      <div class="form-group">
+        <select class="form-control" #accountID="ngModel" [(ngModel)]="expense.accountID" name="accountID">
+          <option value="{{ user.id }}" *ngFor="let user of users" selected>{{ user.username }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control" placeholder="yyyy-mm-dd" name="dp" [(ngModel)]="date" ngbDatepicker #d="ngbDatepicker">
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button">
+              <span class="oi oi-calendar"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <ngb-timepicker name="time" [(ngModel)]="time" required></ngb-timepicker>
+
+      <button class="btn btn-primary" type="submit" [disabled]="!loginForm.form.valid">Save</button>
+      <button class="btn btn-danger" type="button" (click)="onDelete()" style="margin-left: 10px ">Delete</button>
+    </form>
+  </div>
+</div>

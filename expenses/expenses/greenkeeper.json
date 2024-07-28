@@ -1,0 +1,12 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "frontend/package.json"
+      ],
+      "ignore": [
+        "typescript"
+      ]      
+    }
+  }
+}
